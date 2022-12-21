@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_financial_app/src/screen/home/homeScreen.dart';
-import 'package:flutter_financial_app/src/screen/statics/static_screen.dart';
+import 'package:flutter_financial_app/src/widgets/bottom_navigation.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,13 +14,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      
       theme: ThemeData(
-        
         primarySwatch: Colors.blue,
       ),
-      home: const Statistics(),
+      home: const Bottom(),
     );
   }
 }
-
