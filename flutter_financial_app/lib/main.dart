@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_financial_app/src/screen/home/homeScreen.dart';
+import 'package:flutter_financial_app/src/screen/statics/static_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         
         primarySwatch: Colors.blue,
       ),
-      home: const HomeScreen(),
+      home: const Statistics(),
     );
   }
 }
