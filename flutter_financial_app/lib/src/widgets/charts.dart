@@ -1,17 +1,46 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:flutter_financial_app/src/models/add_data.dart';
+import 'package:flutter_financial_app/src/utils/utilitys.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class Chart extends StatefulWidget {
-  const Chart({Key? key}) : super(key: key);
+  int index;
+    Chart({Key? key, required this.index}) : super(key: key);
 
   @override
   State<Chart> createState() => _ChartState();
 }
 
 class _ChartState extends State<Chart> {
+  List<Add_data>? a;
+  bool b = true;
+  bool j = true;
   @override
   Widget build(BuildContext context) {
+switch (widget.index) {
+  case 0:
+    a = today();
+    b= true;
+    j=true;
+    break;
+  case 1:
+    a = week();
+    b= false;
+    j=true;
+    break;
+  case 2:
+    a = month();
+    b= false;
+    j=true;
+    break;
+  case 3:
+    a = year();
+   
+    j=false;
+    break;
+  default:
+}
     return SizedBox(
       height: 300,
       width: double.infinity,
@@ -22,11 +51,22 @@ class _ChartState extends State<Chart> {
             color: const Color.fromARGB(255, 47, 125, 121),
             width: 3,
             dataSource: <SalesData>[
-              SalesData(sales: 100, year: 'Mon'),
-              SalesData(sales: 20, year: 'Tue'),
-              SalesData(sales: 40, year: 'Wen'),
-              SalesData(sales: 15, year: 'Sat'),
-              SalesData(sales: 5, year: 'Sun'),
+              ...List.generate(time(a!,b?true:false).length, (index) {
+                return SalesData(
+                    j
+                        ? b
+                            ? a![index].datetime.hour.toString()
+                            : a![index].datetime.day.toString()
+                        : a![index].datetime.month.toString(),
+                    b
+                        ? index > 0
+                            ? time(a!, true)[index] + time(a!, true)[index - 1]
+                            : time(a!, true)[index]
+                        : index > 0
+                            ? time(a!, false)[index] +
+                                time(a!, false)[index - 1]
+                            : time(a!, false)[index]);
+              })
             ],
             xValueMapper: (SalesData sales, _) => sales.year,
             yValueMapper: (SalesData sales, _) => sales.sales,
@@ -40,8 +80,8 @@ class _ChartState extends State<Chart> {
 class SalesData {
   final String year;
   final int sales;
-  SalesData({
-    required this.year,
-    required this.sales,
-  });
+  SalesData(
+     this.year,
+     this.sales,
+  );
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_financial_app/src/models/add_data.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class Add_Screen extends StatefulWidget {
   const Add_Screen({super.key});
@@ -8,6 +10,7 @@ class Add_Screen extends StatefulWidget {
 }
 
 class _Add_ScreenState extends State<Add_Screen> {
+  final box = Hive.box<Add_data>('data');
   DateTime date = DateTime.now();
   String? selectedItem;
   String? selectedItemi;
@@ -87,6 +90,7 @@ class _Add_ScreenState extends State<Add_Screen> {
             list: _itemei,
             itemSelected: selectedItemi,
             isName: false,
+            hasImage: false,
           ),
           const SizedBox(height: 30),
           date_Time(),
@@ -100,7 +104,17 @@ class _Add_ScreenState extends State<Add_Screen> {
 
   GestureDetector save() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        var add = Add_data(
+          selectedItem!,
+          explain_C.text,
+          amount_C.text,
+          selectedItemi!,
+          date,
+        );
+        box.add(add);
+        Navigator.of(context).pop();
+      },
       child: Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(
@@ -196,11 +210,13 @@ class _Add_ScreenState extends State<Add_Screen> {
     );
   }
 
-  Padding customDropDown(
-      {required List<String> list,
-      required String label,
-      String? itemSelected,
-      bool? isName = true}) {
+  Padding customDropDown({
+    required List<String> list,
+    required String label,
+    String? itemSelected,
+    bool? isName = true,
+    bool? hasImage = true,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Container(
@@ -222,11 +238,15 @@ class _Add_ScreenState extends State<Add_Screen> {
                   child: Container(
                     child: Row(
                       children: [
-                        SizedBox(
-                          width: 40,
-                          child: Image.asset('images/$e.png'),
-                        ),
-                        const SizedBox(width: 10),
+                        hasImage == true
+                            ? SizedBox(
+                                width: 40,
+                                child: Image.asset('images/$e.png'),
+                              )
+                            : Container(),
+                        hasImage == true
+                            ? const SizedBox(width: 10)
+                            : Container(),
                         Text(
                           e,
                           style: const TextStyle(

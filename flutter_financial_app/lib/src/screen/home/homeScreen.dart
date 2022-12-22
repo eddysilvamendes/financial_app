@@ -1,87 +1,123 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_financial_app/src/data/list_data.dart';
+import 'package:flutter_financial_app/src/models/add_data.dart';
+import 'package:flutter_financial_app/src/utils/utilitys.dart';
 import 'package:flutter_financial_app/src/widgets/icon_Text.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_flutter/adapters.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  var history;
+  final box = Hive.box<Add_data>('data');
+  final List<String> day = [
+    'Monday',
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    'friday',
+    'saturday',
+    'sunday'
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height: 340,
-              child: _head(),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    'Transactions History',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 19,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Text(
-                    'See All',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
+          child: ValueListenableBuilder(
+            valueListenable: box.listenable(),
+        builder: (context, value, child) => CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 340,
+                child: _head(),
               ),
             ),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                return ListTile(
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Image.asset(
-                      'images/${geter()[index].image}',
-                      height: 40,
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const [
+                    Text(
+                      'Transactions History',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 19,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                  title:  Text(
-                    geter()[index].name!,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600,
+                    Text(
+                      'See All',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                  subtitle:  Text(
-                    geter()[index].time!,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  trailing:  Text(
-                    '${geter()[index].fee} CVE',
-                    style:  TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.w600,
-                      color: geter()[index].buy! ? Colors.red:Colors.green,
-                    ),
-                  ),
-                );
-              },
-              childCount: geter().length,
+                  ],
+                ),
+              ),
             ),
-          ),
-        ],
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  history = box.values.toList()[index];
+                  return getList(history, index);
+                },
+                childCount: box.length,
+              ),
+            ),
+          ],
+        ),
       )),
+    );
+  }
+
+  Widget getList(Add_data history, int index) {
+    return Dismissible(
+      key: UniqueKey(),
+      onDismissed: (direction) => history.delete(),
+      child: getListTile(index, history),
+    );
+  }
+
+  ListTile getListTile(int index, Add_data history) {
+    return ListTile(
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(5),
+        child: Image.asset(
+          'images/${history.name}.png',
+          height: 40,
+        ),
+      ),
+      title: Text(
+        history.explain,
+        style: const TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      subtitle: Text(
+        '${day[history.datetime.weekday - 1]} ${history.datetime.day}-${history.datetime.month}-${history.datetime.year}',
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      trailing: Text(
+        '${history.amount} CVE',
+        style: TextStyle(
+          fontSize: 19,
+          fontWeight: FontWeight.w600,
+          color: history.IN != 'Income' ? Colors.red : Colors.green,
+        ),
+      ),
     );
   }
 
@@ -195,9 +231,9 @@ class HomeScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 15),
                   child: Row(
-                    children: const [
+                    children:  [
                       Text(
-                        '\$ 2,957',
+                        '\$ ${total()}',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 25,
@@ -223,9 +259,9 @@ class HomeScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children:  [
                       Text(
-                        '\$ 1,564',
+                        '\$ ${income()}',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 17,
@@ -233,7 +269,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '\$ 450',
+                        '\$ ${expenses()}',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 17,
