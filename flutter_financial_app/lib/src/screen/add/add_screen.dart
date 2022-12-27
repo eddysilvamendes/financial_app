@@ -15,9 +15,12 @@ class _Add_ScreenState extends State<Add_Screen> {
   String? selectedItem;
   String? selectedItemi;
   final List<String> _item = [
-    'cash-back',
-    'credit-card',
-    'money',
+    'Contas',
+    'Divertimento',
+    'Educação',
+    'Alimentação',
+    'Saude',
+    'Pagamento',
   ];
   final List<String> _itemei = [
     'Income',
@@ -90,7 +93,7 @@ class _Add_ScreenState extends State<Add_Screen> {
             list: _itemei,
             itemSelected: selectedItemi,
             isName: false,
-            hasImage: false,
+            //hasImage: false,
           ),
           const SizedBox(height: 30),
           date_Time(),
@@ -240,7 +243,7 @@ class _Add_ScreenState extends State<Add_Screen> {
                       children: [
                         hasImage == true
                             ? SizedBox(
-                                width: 40,
+                                width: 30,
                                 child: Image.asset('images/$e.png'),
                               )
                             : Container(),
@@ -265,7 +268,7 @@ class _Add_ScreenState extends State<Add_Screen> {
                   (e) => Row(
                     children: [
                       SizedBox(
-                        width: 42,
+                        width: 30,
                         child: Image.asset('images/$e.png'),
                       ),
                       const SizedBox(width: 10),

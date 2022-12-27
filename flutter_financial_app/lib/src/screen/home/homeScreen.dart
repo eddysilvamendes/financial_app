@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_financial_app/src/data/list_data.dart';
 import 'package:flutter_financial_app/src/models/add_data.dart';
 import 'package:flutter_financial_app/src/utils/utilitys.dart';
 import 'package:flutter_financial_app/src/widgets/icon_Text.dart';
@@ -29,54 +28,60 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: ValueListenableBuilder(
-            valueListenable: box.listenable(),
-        builder: (context, value, child) => CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: SizedBox(
+        child: ValueListenableBuilder(
+          valueListenable: box.listenable(),
+          builder: (context, value, child) => Column(
+            children: [
+              SizedBox(
                 height: 340,
                 child: _head(),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text(
-                      'Transactions History',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 19,
-                        color: Colors.black,
+              Expanded(
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: const [
+                            Text(
+                              'Transactions History',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 19,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Text(
+                              'See All',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    Text(
-                      'See All',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        color: Colors.grey,
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          history = box.values.toList()[index];
+                          return getList(history, index);
+                        },
+                        childCount: box.length,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  history = box.values.toList()[index];
-                  return getList(history, index);
-                },
-                childCount: box.length,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 
@@ -111,7 +116,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       trailing: Text(
-        '${history.amount} CVE',
+        history.IN != 'Income'
+            ? '-${history.amount} CVE'
+            : '${history.amount} CVE',
         style: TextStyle(
           fontSize: 19,
           fontWeight: FontWeight.w600,
@@ -231,10 +238,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 Padding(
                   padding: const EdgeInsets.only(left: 15),
                   child: Row(
-                    children:  [
+                    children: [
                       Text(
                         '\$ ${total()}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 25,
                           color: Colors.white,
@@ -259,10 +266,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children:  [
+                    children: [
                       Text(
                         '\$ ${income()}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 17,
                           color: Colors.white,
@@ -270,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Text(
                         '\$ ${expenses()}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 17,
                           color: Colors.white,

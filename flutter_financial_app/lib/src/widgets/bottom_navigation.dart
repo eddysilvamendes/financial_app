@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_financial_app/src/screen/add/add_screen.dart';
+import 'package:flutter_financial_app/src/screen/cateogries/categories_screen.dart';
 import 'package:flutter_financial_app/src/screen/home/homeScreen.dart';
 import 'package:flutter_financial_app/src/screen/statics/static_screen.dart';
 
@@ -15,9 +16,7 @@ class _BottomState extends State<Bottom> {
   List Screen = [
     const HomeScreen(),
     const Statistics(),
-    Container(
-      color: Colors.red,
-    ),
+    const CategoriesScreen(),
     Container(
       color: Colors.blue,
     ),
@@ -65,7 +64,7 @@ class _BottomState extends State<Bottom> {
               ),
               const SizedBox(width: 20),
               NavigationIcon(
-                icon: Icons.account_balance_wallet_outlined,
+                icon: Icons.category_outlined,
                 onTap: () {
                   setState(() {
                     index_color = 2;

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_financial_app/src/models/add_categories.dart';
 import 'package:flutter_financial_app/src/models/add_data.dart';
 import 'package:flutter_financial_app/src/widgets/bottom_navigation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-void main() async{
+void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(AdddataAdapter());
+  Hive.registerAdapter(AddCategoriesAdapter());
   await Hive.openBox<Add_data>('data');
+  await Hive.openBox<Add_Categories>('categories');
   runApp(const MyApp());
 }
 
